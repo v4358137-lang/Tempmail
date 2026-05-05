@@ -13,7 +13,7 @@ services:
         fromService:
           name: tempmail-frontend
           type: web
-          property: host
+          property: url
 
   # ── Frontend (static site) ───────────────────────────────────────────────
   - type: web
@@ -27,7 +27,7 @@ services:
         fromService:
           name: tempmail-backend
           type: web
-          property: host
+          property: url
     routes:
       - type: rewrite
         source: /*

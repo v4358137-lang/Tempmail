@@ -14,11 +14,18 @@ const allowedOrigins = [
   'https://*.onrender.com', // render deployments
 ];
 
+// ─── ENSURE PROTOCOL ─────────────────────────────────────────────────────────
+// Render's Blueprint 'host' property doesn't include https://
+const sanitizedOrigins = allowedOrigins.map(o => {
+  if (o && !o.startsWith('http') && !o.includes('*')) return `https://${o}`;
+  return o;
+});
+
 app.use(cors({
   origin: (origin, cb) => {
     // allow server-to-server (no origin) and whitelisted origins
     if (!origin) return cb(null, true);
-    const ok = allowedOrigins.some(o => {
+    const ok = sanitizedOrigins.some(o => {
       if (o.includes('*')) {
         const pattern = new RegExp('^' + o.replace(/\*/g, '.*') + '$');
         return pattern.test(origin);

@@ -7,35 +7,7 @@ const emailRoutes = require('./routes/email');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// ─── CORS ────────────────────────────────────────────────────────────────────
-const allowedOrigins = [
-  process.env.FRONTEND_URL || 'http://localhost:5173',
-  'http://localhost:4173',  // vite preview
-  'https://*.onrender.com', // render deployments
-];
-
-// ─── ENSURE PROTOCOL ─────────────────────────────────────────────────────────
-// Render's Blueprint 'host' property doesn't include https://
-const sanitizedOrigins = allowedOrigins.map(o => {
-  if (o && !o.startsWith('http') && !o.includes('*')) return `https://${o}`;
-  return o;
-});
-
-app.use(cors({
-  origin: (origin, cb) => {
-    // allow server-to-server (no origin) and whitelisted origins
-    if (!origin) return cb(null, true);
-    const ok = sanitizedOrigins.some(o => {
-      if (o.includes('*')) {
-        const pattern = new RegExp('^' + o.replace(/\*/g, '.*') + '$');
-        return pattern.test(origin);
-      }
-      return o === origin;
-    });
-    cb(ok ? null : new Error('Not allowed by CORS'), ok);
-  },
-  credentials: true,
-}));
+app.use(cors()); // Allow all origins for maximum compatibility on Render
 
 app.use(express.json());
 

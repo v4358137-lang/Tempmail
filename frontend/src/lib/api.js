@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let BASE_URL = import.meta.env.VITE_API_URL || 'https://tempmail-backend-7taa.onrender.com';
+let BASE_URL = import.meta.env.VITE_API_URL || "https://tempmail-backend-7taa.onrender.com";
 
 // Ensure protocol for Render host-only env vars
 if (BASE_URL && !BASE_URL.startsWith('http')) {
@@ -9,8 +9,20 @@ if (BASE_URL && !BASE_URL.startsWith('http')) {
 
 const api = axios.create({
   baseURL: `${BASE_URL}/api/email`,
-  timeout: 12000,
+  timeout: 15000, // Slightly longer for free-tier cold starts
 });
+
+// ─── FAIL SAFE & LOGGING ─────────────────────────────────────────────────────
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("API ERROR:", error);
+    // Return safe empty data for specific patterns to prevent UI hang
+    if (error.config?.url?.includes('/domains')) return { data: [] };
+    if (error.config?.url?.includes('/messages')) return { data: [] };
+    return Promise.reject(error);
+  }
+);
 
 // ─── Account ─────────────────────────────────────────────────────────────────
 export const getDomains = () =>

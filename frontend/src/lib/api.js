@@ -1,15 +1,15 @@
 import axios from 'axios';
 
-let BASE_URL = import.meta.env.VITE_API_URL || "https://tempmail-backend-7taa.onrender.com";
+let BASE_URL = import.meta.env.VITE_API_URL || "";
 
-// Ensure protocol for Render host-only env vars
+// Ensure protocol for Render host-only env vars (if any)
 if (BASE_URL && !BASE_URL.startsWith('http')) {
   BASE_URL = `https://${BASE_URL}`;
 }
 
 const api = axios.create({
-  baseURL: `${BASE_URL}/api/email`,
-  timeout: 15000, // Slightly longer for free-tier cold starts
+  baseURL: BASE_URL ? `${BASE_URL}/api/email` : "/api/email",
+  timeout: 15000,
 });
 
 // ─── FAIL SAFE & LOGGING ─────────────────────────────────────────────────────

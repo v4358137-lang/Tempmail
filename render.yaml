@@ -1,32 +1,20 @@
 services:
-  # ── Backend ─────────────────────────────────────────────────────────────
+  # ── Unified TempMail Service ────────────────────────────────────────────
   - type: web
-    name: tempmail-backend
+    name: tempmail
     runtime: node
     plan: free
-    rootDir: backend
-    buildCommand: npm install
-    startCommand: node server.js
+    buildCommand: |
+      # 1. Install and build frontend
+      cd frontend && npm install && npm run build
+      # 2. Move build to backend folder
+      cd ..
+      rm -rf backend/dist && cp -r frontend/dist backend/dist
+      # 3. Install backend dependencies
+      cd backend && npm install
+    startCommand: cd backend && node server.js
     envVars:
       - key: NODE_ENV
         value: production
-      - key: FRONTEND_URL
-        fromService:
-          name: tempmail-frontend
-          type: web
-          property: host
-
-  # ── Frontend (now a web service to fix the loop) ───────────────────────
-  - type: web
-    name: tempmail-frontend
-    runtime: node
-    plan: free
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    startCommand: node server.js
-    envVars:
       - key: VITE_API_URL
-        fromService:
-          name: tempmail-backend
-          type: web
-          property: host
+        value: "" # Empty means use relative path (current host)

@@ -7,14 +7,15 @@ const emailRoutes = require('./routes/email');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors()); // Allow all origins for maximum compatibility on Render
+// ─── CORS ────────────────────────────────────────────────────────────────────
+app.use(cors()); // Allow all origins for maximum compatibility
 
 app.use(express.json());
 
 // ─── RATE LIMIT ──────────────────────────────────────────────────────────────
 const limiter = rateLimit({
   windowMs: 2000,  // 2 seconds
-  max: 8,          // max 4 QPS, well under mail.tm 8 QPS limit
+  max: 10,         // Slightly higher limit for production
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, error: 'Too many requests, slow down.' },
@@ -24,26 +25,11 @@ app.use('/api', limiter);
 // ─── ROUTES ──────────────────────────────────────────────────────────────────
 app.use('/api/email', emailRoutes);
 
-// ─── STATIC FILES (FRONTEND) ──────────────────────────────────────────────────
-const path = require('path');
-const distPath = path.join(__dirname, 'dist');
-
-// Serve static files if the dist folder exists
-app.use(express.static(distPath));
-
-// Health check for Render
+// ─── HEALTH CHECK (For UptimeRobot & Render) ─────────────────────────────────
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: Date.now() }));
-
-// Handle SPA routing: return index.html for all non-api routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(distPath, 'index.html'), (err) => {
-    if (err) {
-      res.status(404).send('API is running. Frontend build missing or not found in /backend/dist');
-    }
-  });
-});
+app.get('/', (_req, res) => res.send('TempMail API is running. Point your frontend to this URL.'));
 
 // ─── START ───────────────────────────────────────────────────────────────────
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Unified TempMail service running on port ${PORT}`);
+  console.log(`🚀 TempMail Backend API running on port ${PORT}`);
 });

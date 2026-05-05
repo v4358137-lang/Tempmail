@@ -3,6 +3,7 @@ services:
   - type: web
     name: tempmail-backend
     runtime: node
+    plan: free
     rootDir: backend
     buildCommand: npm install
     startCommand: node server.js
@@ -12,13 +13,12 @@ services:
       - key: FRONTEND_URL
         fromService:
           name: tempmail-frontend
-          type: web
+          type: static
           property: host
 
   # ── Frontend (static site) ───────────────────────────────────────────────
-  - type: web
+  - type: static
     name: tempmail-frontend
-    runtime: static
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist

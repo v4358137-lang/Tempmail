@@ -11,12 +11,12 @@ services:
       - key: NODE_ENV
         value: production
 
-  # ── Frontend (Static Site - Best for React/Vite) ───────────────────────
+  # ── Frontend (Static Site) ───────────────────────────────────────────────
   - type: static
     name: tempmail-frontend
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
+    # Note: Removing rootDir to avoid path confusion on static sites
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
     envVars:
       - key: VITE_API_URL
         value: https://tempmail-backend-7taa.onrender.com

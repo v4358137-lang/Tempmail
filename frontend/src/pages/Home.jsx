@@ -97,6 +97,16 @@ function HowItWorks() {
 
 /* ─── Loading screen ────────────────────────────────────── */
 function LoadingScreen() {
+  const [showWakeupText, setShowWakeupText] = useState(false);
+
+  useEffect(() => {
+    // Show wakeup warning if loading takes more than 5 seconds
+    const timer = setTimeout(() => {
+      setShowWakeupText(true);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6" style={{ minHeight:'60vh' }}>
       <div className="relative animate-float">
@@ -113,6 +123,11 @@ function LoadingScreen() {
       <div className="text-center space-y-2">
         <p className="gradient-animated font-black text-xl">TempMailX</p>
         <p className="text-slate-500 text-sm">Generating your secure inbox…</p>
+        {showWakeupText && (
+          <p className="text-sky-400 text-xs mt-2 animate-fade-in font-medium">
+            Waking up server... (This can take up to 60s on Render free tier)
+          </p>
+        )}
       </div>
       <div className="flex gap-1.5">
         {[0,150,300].map(d => (

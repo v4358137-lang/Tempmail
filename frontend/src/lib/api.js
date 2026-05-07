@@ -9,7 +9,7 @@ if (BASE_URL && !BASE_URL.startsWith('http')) {
 
 const api = axios.create({
   baseURL: `${BASE_URL}/api/email`,
-  timeout: 15000,
+  timeout: 120000, // Increased to 120s to allow Render free tier to wake up
 });
 
 // ─── FAIL SAFE & LOGGING ─────────────────────────────────────────────────────

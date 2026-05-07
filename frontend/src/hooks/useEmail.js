@@ -145,7 +145,13 @@ export function useEmail() {
         startPolling(sess.token, sess.expireAt);
         setLoading(false);
         return true;
-      } catch (_) { }
+      } catch (e) {
+        if (e.code === 'ECONNABORTED' || (e.message && e.message.includes('timeout'))) {
+          setError('Server is waking up (this can take up to 60 seconds on the free tier). Please try again.');
+          setLoading(false);
+          return true; // Return true so it doesn't immediately try to generate a new email and potentially fail again
+        }
+      }
     } else {
       setExpired(true);
       setSession({ ...stored, token: null });
@@ -202,7 +208,11 @@ export function useEmail() {
       startCountdown(expireAt);
       startPolling(sess.token, expireAt);
     } catch (e) {
-      setError('Failed to generate email. Check your connection and try again.');
+      if (e.code === 'ECONNABORTED' || (e.message && e.message.includes('timeout'))) {
+        setError('Server is waking up (this can take up to 60 seconds on the free tier). Please try again.');
+      } else {
+        setError('Failed to generate email. Check your connection and try again.');
+      }
     } finally {
       setGenerating(false);
       setLoading(false);

@@ -1,15 +1,12 @@
 services:
-  # ── Unified Service (Backend + Frontend) ─────────────────────────────────
   - type: web
     name: tempmail-app
     runtime: node
     plan: free
-    # Root build command: builds frontend then installs backend deps
-    buildCommand: cd frontend && npm install && npm run build && cd ../backend && npm install
-    # Run from backend directory
-    startCommand: cd backend && node server.js
+    buildCommand: npm run install-all && npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: VITE_API_URL
-        value: "" # Empty for relative path
+        value: ""

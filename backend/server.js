@@ -30,17 +30,24 @@ app.use('/api/email', emailRoutes);
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: Date.now() }));
 
 // ─── STATIC FILES (Serve Frontend) ───────────────────────────────────────────
-// Serve static files from the React app dist folder
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
+const distPath = path.join(__dirname, '..', 'frontend', 'dist');
+console.log(`[Server] Serving static files from: ${distPath}`);
+app.use(express.static(distPath));
 
 // ─── CATCH-ALL (Fix 404 on Reload) ───────────────────────────────────────────
-// For any request that doesn't match an API route, send back the index.html
 app.get('*', (req, res) => {
   // If it's an API request that wasn't caught, return 404
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ success: false, error: 'API endpoint not found' });
   }
-  res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+  
+  const indexPath = path.join(distPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error(`[Server] Error sending index.html: ${err.message} at ${indexPath}`);
+      res.status(500).send('Frontend build missing or inaccessible. Please check Render build logs.');
+    }
+  });
 });
 
 // ─── START ───────────────────────────────────────────────────────────────────

@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-let BASE_URL = import.meta.env.VITE_API_URL || "https://tempmail-backend-7taa.onrender.com";
+let BASE_URL = import.meta.env.VITE_API_URL || "";
 
 // Ensure protocol for Render host-only env vars (if any)
-if (BASE_URL && !BASE_URL.startsWith('http')) {
+if (BASE_URL && !BASE_URL.startsWith('http') && !BASE_URL.startsWith('/')) {
   BASE_URL = `https://${BASE_URL}`;
 }
 

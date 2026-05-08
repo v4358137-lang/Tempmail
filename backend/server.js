@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const rateLimit = require('express-rate-limit');
 const emailRoutes = require('./routes/email');
 
@@ -27,7 +28,20 @@ app.use('/api/email', emailRoutes);
 
 // ─── HEALTH CHECK (For UptimeRobot & Render) ─────────────────────────────────
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: Date.now() }));
-app.get('/', (_req, res) => res.send('TempMail API is running. Point your frontend to this URL.'));
+
+// ─── STATIC FILES (Serve Frontend) ───────────────────────────────────────────
+// Serve static files from the React app dist folder
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+// ─── CATCH-ALL (Fix 404 on Reload) ───────────────────────────────────────────
+// For any request that doesn't match an API route, send back the index.html
+app.get('*', (req, res) => {
+  // If it's an API request that wasn't caught, return 404
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ success: false, error: 'API endpoint not found' });
+  }
+  res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+});
 
 // ─── START ───────────────────────────────────────────────────────────────────
 app.listen(PORT, '0.0.0.0', () => {

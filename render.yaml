@@ -1,26 +1,15 @@
 services:
-  # ── Backend (Web Service) ───────────────────────────────────────────────
+  # ── Unified Service (Backend + Frontend) ─────────────────────────────────
   - type: web
-    name: tempmail-backend
+    name: tempmail-app
     runtime: node
     plan: free
-    rootDir: backend
-    buildCommand: npm install
-    startCommand: node server.js
+    # Root build command: builds frontend then installs backend deps
+    buildCommand: cd frontend && npm install && npm run build && cd ../backend && npm install
+    # Run from backend directory
+    startCommand: cd backend && node server.js
     envVars:
       - key: NODE_ENV
         value: production
-
-  # ── Frontend (Static Site) ───────────────────────────────────────────────
-  - type: static
-    name: tempmail-frontend
-    # Note: Removing rootDir to avoid path confusion on static sites
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: frontend/dist
-    envVars:
       - key: VITE_API_URL
-        value: https://tempmail-backend-7taa.onrender.com
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+        value: "" # Empty for relative path

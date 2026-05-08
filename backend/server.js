@@ -30,7 +30,8 @@ app.use('/api/email', emailRoutes);
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: Date.now() }));
 
 // ─── STATIC FILES (Serve Frontend) ───────────────────────────────────────────
-const distPath = path.join(__dirname, '..', 'frontend', 'dist');
+// In production, the frontend 'dist' folder is copied inside the 'backend' folder
+const distPath = path.join(__dirname, 'dist');
 console.log(`[Server] Serving static files from: ${distPath}`);
 app.use(express.static(distPath));
 

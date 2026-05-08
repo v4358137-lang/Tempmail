@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
 const emailRoutes = require('./routes/email');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -33,6 +34,13 @@ app.get('/health', (_req, res) => res.json({ status: 'ok', ts: Date.now() }));
 // In production, the frontend 'dist' folder is copied inside the 'backend' folder
 const distPath = path.join(__dirname, 'dist');
 console.log(`[Server] Serving static files from: ${distPath}`);
+
+if (fs.existsSync(distPath)) {
+  console.log(`[Server] Content of dist: ${fs.readdirSync(distPath).join(', ')}`);
+} else {
+  console.warn(`[Server] WARNING: distPath does not exist: ${distPath}`);
+}
+
 app.use(express.static(distPath));
 
 // ─── ROOT ROUTE ──────────────────────────────────────────────────────────────

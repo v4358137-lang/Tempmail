@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: tempmail-app
+    name: tempmail-kvij
     runtime: node
     plan: free
     buildCommand: npm run install-all && npm run build

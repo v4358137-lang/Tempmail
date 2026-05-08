@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "install-all": "cd frontend && npm install && cd ../backend && npm install",
-    "build": "cd frontend && npm run build && cp -r dist ../backend/",
+    "build": "cd frontend && npm run build && mkdir -p ../backend/dist && cp -rv dist/* ../backend/dist/",
     "start": "cd backend && node server.js"
   }
 }

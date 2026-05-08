@@ -34,6 +34,11 @@ const distPath = path.join(__dirname, '..', 'frontend', 'dist');
 console.log(`[Server] Serving static files from: ${distPath}`);
 app.use(express.static(distPath));
 
+// ─── ROOT ROUTE ──────────────────────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
 // ─── CATCH-ALL (Fix 404 on Reload) ───────────────────────────────────────────
 app.get('*', (req, res) => {
   // If it's an API request that wasn't caught, return 404
@@ -42,6 +47,10 @@ app.get('*', (req, res) => {
   }
   
   const indexPath = path.join(distPath, 'index.html');
+  
+  // Prevent caching of index.html so reloads always check the server
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  
   res.sendFile(indexPath, (err) => {
     if (err) {
       console.error(`[Server] Error sending index.html: ${err.message} at ${indexPath}`);
